@@ -23,11 +23,12 @@
             </form>
         <div id="shelves"></div>
         <script>
-            const books = JSON.parse(localStorage.getItem('cornerBooks') || [
-                {id: "annie", title: "Annie Knows Everything", author: "Rachel Woods", shelf: "Reading"},
-                {id: "shadow", title: "Shadow Thief", author: "Eva Chase", shelf: "Reading"},
-                {id: "king", title: "King of Battle and Blood", author: "Scarlett St Clair", shelf: "TBR"}
-            ];
+            const books = JSON.parse(localStorage.getItem('cornerBooks')) || [
+            {id: "annie", title: "Annie Knows Everything", author: "Rachel Woods", shelf: "Reading"},
+            {id: "shadow", title: "Shadow Thief", author: "Eva Chase", shelf: "Reading"},
+            {id: "king", title: "King of Battle and Blood", author: "Scarlett St Clair", shelf: "TBR"}
+             ];
+
 
             const shelves = [
                 {id: "wishlist", label: "Wishlist"},
