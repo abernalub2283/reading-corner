@@ -23,121 +23,42 @@
             </form>
         <div id="shelves"></div>
         <script>
-            const books = JSON.parse(localStorage.getItem('cornerBooks')) || [
-            {id: "annie", title: "Annie Knows Everything", author: "Rachel Woods", shelf: "Reading"},
-            {id: "shadow", title: "Shadow Thief", author: "Eva Chase", shelf: "Reading"},
-            {id: "king", title: "King of Battle and Blood", author: "Scarlett St Clair", shelf: "TBR"}
-             ];
+           const tracker = document.querySelector('.tracker');
+            const progressFill = document.querySelector('.progress-fill');
+            const progressText = document.querySelector('.progress-text');
+            const totalRows = 28;
 
+            let doneRows = JSON.parse(localStorage.getItem('wispRows')) || [];
 
-            const shelves = [
-                {id: "wishlist", label: "Wishlist"},
-                {id: "TBR", label: "TBR"},
-                {id: "Reading", label: "Reading"},
-                {id: "Finished", label: "Finished"}
-            ]
-
-            const shelvesDiv = document.getElementById('shelves');
-
-            function renderBooks() {
-                shelvesDiv.innerHTML = shelves.map (shelf => `
-                    <section class="shelf">
-                        <h2>${shelf.label}</h2>
-                        <div class="cards">
-                        ${books.filter(book => book.shelf === shelf.id).map(bookCard).join('')}
-                        </div>
-                    </section>
-                `).join('');
+            for (let i = 1; i <= totalRows; i++) {
+                const box = document.createElement('div');
+                box.className = 'row-box';
+                box.textContent = i;
+                if (doneRows.includes(i)) box.classList.add('done');
+                tracker.appendChild(box);
             }
 
-            renderBooks();
-
-            let ratings = JSON.parse(localStorage.getItem('cornerRatings')) || {};
-
-            shelvesDiv.addEventListener('click', function(event) {
-                if (!event.target.matches('.stars span')) return;
-                const card = event.target.closest('.book-card');
-                const id = card.dataset.id;
-                ratings[id] = parseInt(event.target.dataset.value);
-                localStorage.setItem('cornerRatings', JSON.stringify(ratings));
-                updateStars();
-            });
-
-            function updateStars () {
-                document.querySelectorAll('.book-card').forEach(function(card) {
-                    const rating = ratings[card.dataset.id] || 0;
-                    card.querySelectorAll('.stars span').forEach(function(star) {
-                        star.classList.toggle('lit', parseInt(star.dataset.value) <= rating);
-                    });
-                })
-            }
-
-            updateStars();
-
-            function shelfOptions(current) {
-                return shelves.map(s => {
-                    const selected = s.id === current ? 'selected' : '';
-                    return `<option value="${s.id}" ${selected}>${s.label}</option>`;
-                }).join('');
-            }
-
-            function bookCard(book) {
-                return `
-                    <div class="book-card" data-id="${book.id}">
-                        <h3>${book.title}</h3>
-                        <p>${book.author}</p>
-                        <div class="stars">
-                            <span data-value="1">★</span>
-                            <span data-value="2">★</span>
-                            <span data-value="3">★</span>
-                            <span data-value="4">★</span>
-                            <span data-value="5">★</span>
-                        </div>
-                        <select class="shelf-picker">
-                            ${shelfOptions(book.shelf)}
-                        </select>
-                    </div>
-                `;
-            }
-
-            shelvesDiv.addEventListener('change', function(event) {
-                if (!event.target.matches('.shelf-picker')) return;
-                const card = event.target.closest('.book-card');
-                const book = books.find(b => b.id === card.dataset.id);
-                book.shelf = event.target.value;
-                saveBooks[book.id] = book.shelf;
-                localStorage.setItem('cornerShelves', JSON.stringify(saveBooks));
-                renderBooks();
-                updateStars();
+            tracker.addEventListener('click', function(event) {
+                if (!event.target.matches('.row-box')) return;
+                const row = parseInt(event.target.textContent);
+                event.target.classList.toggle('done');
+                if (doneRows.includes(row)) {
+                    doneRows = doneRows.filter(r => r !== row);
+                } else {
+                    doneRows.push(row);
+                }
+                localStorage.setItem('wispRows', JSON.stringify(doneRows));
                 updateProgress();
             });
 
             function updateProgress() {
-                const done = books.filter(book => book.shelf === 'Finished').length;
-                const percent = books.length ? Math.round(done / books.length * 100) : 0;
-                document.getElementById('progress-text').textContent = done + ' of ' + books.length + ' books finished';
-                document.getElementById('progress-fill').style.width = percent + '%';
+                const done = doneRows.length;
+                const percent = Math.round(done / totalRows * 100);
+                progressFill.style.width = percent + '%';
+                progressText.textContent = done + ' of ' + totalRows + ' rows done';
             }
 
             updateProgress();
-
-           saveBooks(); 
-
-           document.getElementById('new-shelf').innerHTML = shelves.map(s => `<option value="${s.id}">${s.label}</option>`).join('');
-
-           document.getElementById('add-book').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const title = document.getElementById('new-title').value.trim();
-            const author = document.getElementById('new-author').value.trim();
-            const shelf = document.getElementById('new-shelf').value;
-            if (!title || !author) return;
-            books.push({ id: 'book' + Date.now(), title: title, author: author, shelf: shelf });
-            saveBooks();
-            renderBooks();
-            updateStars();
-            updateProgress();
-            event.target.reset();
-            });
 
         </script>
     </body>
