@@ -6,6 +6,12 @@
     </head>
     <body>
         <h1>Welcome to the Reading Corner</h1>
+        <div class="progress-wrap">
+            <p id="progress-text"></p>
+            <div class="progress-bar">
+                <div id="progress-fill"></div>
+            </div>
+        </div>
         <div id="shelves" class="shelf"></div>
         <script>
             const books = [
@@ -22,22 +28,6 @@
             ]
 
             const shelvesDiv = document.getElementById('shelves');
-
-            function bookCard(book) {
-                return `
-                    <div class="book-card" data-id="${book.id}">
-                        <h3>${book.title}</h3>
-                        <p>${book.author}</p>
-                        <div class="stars">
-                            <span data-value="1">★</span>
-                            <span data-value="2">★</span>
-                            <span data-value="3">★</span>
-                            <span data-value="4">★</span>
-                            <span data-value="5">★</span>
-                        </div>
-                    </div>
-                `;
-            }
 
             function renderBooks() {
                 shelvesDiv.innerHTML = shelves.map (shelf => `
@@ -73,6 +63,61 @@
             }
 
             updateStars();
+
+            function shelfOptions(current) {
+                return shelves.map(s => {
+                    const selected = s.id === current ? 'selected' : '';
+                    return `<option value="${s.id}" ${selected}>${s.label}</option>`;
+                }).join('');
+            }
+
+            function bookCard(book) {
+                return `
+                    <div class="book-card" data-id="${book.id}">
+                        <h3>${book.title}</h3>
+                        <p>${book.author}</p>
+                        <div class="stars">
+                            <span data-value="1">★</span>
+                            <span data-value="2">★</span>
+                            <span data-value="3">★</span>
+                            <span data-value="4">★</span>
+                            <span data-value="5">★</span>
+                        </div>
+                        <select class="shelf-picker">
+                            ${shelfOptions(book.shelf)}
+                        </select>
+                    </div>
+                `;
+            }
+
+            shelvesDiv.addEventListener('change', function(event) {
+                if (!event.target.matches('.shelf-picker')) return;
+                const card = event.target.closest('.book-card');
+                const book = books.find(b => b.id === card.dataset.id);
+                book.shelf = event.target.value;
+                shelfMap[book.id] = book.shelf;
+                localStorage.setItem('cornerShelves', JSON.stringify(shelfMap));
+                renderBooks();
+                updateStars();
+                updateProgress();
+            });
+
+            function updateProgress() {
+                const done = books.filter(book => book.shelf === 'Finished').length;
+                const percent = books.length ? Math.round(done / books.length * 100) : 0;
+                document.getElementById('progress-text').textContent = done + ' of ' + books.length + ' books finished';
+                document.getElementById('progress-fill').style.width = percent + '%';
+            }
+
+            updateProgress();
+
+            const shelfMap = JSON.parse(localStorage.getItem('cornerShelves')) || {};
+            books.forEach(function(book) {
+                if (shelfMap[book.id]) {
+                    book.shelf = shelfMap[book.id];
+                }
+            });
+
         </script>
     </body>
 </html>
