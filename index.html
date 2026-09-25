@@ -1,0 +1,47 @@
+<! DOCTYPE html>
+<html>
+    <head>
+        <title>Reading Corner</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <h1>Welcome to the Reading Corner</h1>
+        <div class="book-card">
+            <h2>Annie Knows Everything</h2>
+            <p class="author">by Rachel Woods</p>
+            <p class="status">Currently Reading</p>
+            <div class="stars">
+                <span data-value="1">★</span>
+                <span data-value="2">★</span>
+                <span data-value="3">★</span>
+                <span data-value="4">★</span>
+                <span data-value="5">★</span>
+            </div>
+            <p class="notes">Some notes about this book.</p>
+        </div>
+        <script>
+            const stars = document.querySelectorAll('.stars span');
+            let rating = parseInt(localStorage.getItem('cornerRating')) || 0;
+
+            stars.forEach(function(star) {
+                star.addEventListener('click', function() {
+                    rating = parseInt(star.dataset.value);
+                    localStorage.setItem('cornerRating', rating);
+                    updateStars();
+                });
+            });
+
+            function updateStars() {
+                stars.forEach(function(star) {
+                    if (parseInt(star.dataset.value) <= rating) {
+                        star.classList.add('lit');
+                    } else {
+                        star.classList.remove('lit');
+                    }
+                });
+            }
+            
+            updateStars();
+        </script>
+    </body>
+</html>

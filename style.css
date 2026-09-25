@@ -1,0 +1,57 @@
+body {
+    background-color: #1a1a2e;
+    color: #e8e0d0;
+    font-family: Georgia, serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px;
+}
+
+.book-card {
+    background-color: #2d1b2e;
+    border: 2px solid #c9a227;
+    border-radius: 12px;
+    padding: 30px;
+    max-width: 400px;
+    text-align: center;
+}
+
+.book-card h2 {
+    color: #c9a227;
+    margin-bottom: 5px;
+}
+
+.author {
+    font-style: italic;
+    color: #a8b5a0;
+}
+
+.status{
+    background-color: #c9a227;
+    color: #1a1a2e;
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+}
+
+.stars {
+    font-size: 32px;
+    color: #c9a227;
+    letter-spacing: 5px;
+}
+
+.stars span {
+    cursor: pointer;
+    color: #5a4a3a;
+}
+
+.stars span.lit {
+    color: #c9a227;
+}
+
+.notes {
+    font-style: italic;
+    color: #a8b5a0;
+}
