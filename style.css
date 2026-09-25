@@ -17,23 +17,9 @@ body {
     text-align: center;
 }
 
-.book-card h2 {
+.book-card h3 {
     color: #c9a227;
     margin-bottom: 5px;
-}
-
-.author {
-    font-style: italic;
-    color: #a8b5a0;
-}
-
-.status{
-    background-color: #c9a227;
-    color: #1a1a2e;
-    display: inline-block;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 14px;
 }
 
 .stars {
@@ -49,11 +35,6 @@ body {
 
 .stars span.lit {
     color: #c9a227;
-}
-
-.notes {
-    font-style: italic;
-    color: #a8b5a0;
 }
 
 .cards{
