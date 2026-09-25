@@ -14,9 +14,16 @@
                 <div id="progress-fill"></div>
             </div>
         </div>
+        <form id="add-book>
+            <h2>Add a Book</h2>
+            <inpput id="new-title" placeholder="Title">
+            <input id="new-author" placeholder="Author">
+            <select id="new-shelf"></select>
+            <button type="submit">Add Book</button>
+            </form>
         <div id="shelves"></div>
         <script>
-            const books = [
+            const books = JSON.parse(localStorage.getItem('cornerBooks') || [
                 {id: "annie", title: "Annie Knows Everything", author: "Rachel Woods", shelf: "Reading"},
                 {id: "shadow", title: "Shadow Thief", author: "Eva Chase", shelf: "Reading"},
                 {id: "king", title: "King of Battle and Blood", author: "Scarlett St Clair", shelf: "TBR"}
@@ -97,8 +104,8 @@
                 const card = event.target.closest('.book-card');
                 const book = books.find(b => b.id === card.dataset.id);
                 book.shelf = event.target.value;
-                shelfMap[book.id] = book.shelf;
-                localStorage.setItem('cornerShelves', JSON.stringify(shelfMap));
+                saveBooks[book.id] = book.shelf;
+                localStorage.setItem('cornerShelves', JSON.stringify(saveBooks));
                 renderBooks();
                 updateStars();
                 updateProgress();
@@ -113,11 +120,22 @@
 
             updateProgress();
 
-            const shelfMap = JSON.parse(localStorage.getItem('cornerShelves')) || {};
-            books.forEach(function(book) {
-                if (shelfMap[book.id]) {
-                    book.shelf = shelfMap[book.id];
-                }
+           saveBooks(); 
+
+           document.getElementById('new-shelf').innerHTML = shelves.map(s => `<option value="${s.id}">${s.label}</option>`).join('');
+
+           document.getElementById('add-book').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const title = document.getElementById('new-title').value.trim();
+            const author = document.getElementById('new-author').value.trim();
+            const shelf = document.getElementById('new-shelf').value;
+            if (!title || !author) return;
+            books.push({ id: 'book' + Date.now(), title: title, author: author, shelf: shelf });
+            saveBooks();
+            renderBooks();
+            updateStars();
+            updateProgress();
+            event.target.reset();
             });
 
         </script>
