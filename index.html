@@ -1,4 +1,4 @@
-<! DOCTYPE html>
+<!DOCTYPE html>
 <html>
     <head>
         <title>Reading Corner</title>
@@ -6,41 +6,72 @@
     </head>
     <body>
         <h1>Welcome to the Reading Corner</h1>
-        <div class="book-card">
-            <h2>Annie Knows Everything</h2>
-            <p class="author">by Rachel Woods</p>
-            <p class="status">Currently Reading</p>
-            <div class="stars">
-                <span data-value="1">★</span>
-                <span data-value="2">★</span>
-                <span data-value="3">★</span>
-                <span data-value="4">★</span>
-                <span data-value="5">★</span>
-            </div>
-            <p class="notes">Some notes about this book.</p>
-        </div>
+        <div id="shelves" class="shelf"></div>
         <script>
-            const stars = document.querySelectorAll('.stars span');
-            let rating = parseInt(localStorage.getItem('cornerRating')) || 0;
+            const books = [
+                {id: "annie", title: "Annie Knows Everything", author: "Rachel Woods", shelf: "Reading"},
+                {id: "shadow", title: "Shadow Thief", author: "Eva Chase", shelf: "Reading"},
+                {id: "king", title: "King of Battle and Blood", author: "Scarlett St Clair", shelf: "TBR"}
+            ];
 
-            stars.forEach(function(star) {
-                star.addEventListener('click', function() {
-                    rating = parseInt(star.dataset.value);
-                    localStorage.setItem('cornerRating', rating);
-                    updateStars();
-                });
+            const shelves = [
+                {id: "wishlist", label: "Wishlist"},
+                {id: "TBR", label: "TBR"},
+                {id: "Reading", label: "Reading"},
+                {id: "Finished", label: "Finished"}
+            ]
+
+            const shelvesDiv = document.getElementById('shelves');
+
+            function bookCard(book) {
+                return `
+                    <div class="book-card" data-id="${book.id}">
+                        <h3>${book.title}</h3>
+                        <p>${book.author}</p>
+                        <div class="stars">
+                            <span data-value="1">★</span>
+                            <span data-value="2">★</span>
+                            <span data-value="3">★</span>
+                            <span data-value="4">★</span>
+                            <span data-value="5">★</span>
+                        </div>
+                    </div>
+                `;
+            }
+
+            function renderBooks() {
+                shelvesDiv.innerHTML = shelves.map (shelf => `
+                    <section class="shelf">
+                        <h2>${shelf.label}</h2>
+                        <div class="cards">
+                        ${books.filter(book => book.shelf === shelf.id).map(bookCard).join('')}
+                        </div>
+                    </section>
+                `).join('');
+            }
+
+            renderBooks();
+
+            let ratings = JSON.parse(localStorage.getItem('cornerRatings')) || {};
+
+            shelvesDiv.addEventListener('click', function(event) {
+                if (!event.target.matches('.stars span')) return;
+                const card = event.target.closest('.book-card');
+                const id = card.dataset.id;
+                ratings[id] = parseInt(event.target.dataset.value);
+                localStorage.setItem('cornerRatings', JSON.stringify(ratings));
+                updateStars();
             });
 
-            function updateStars() {
-                stars.forEach(function(star) {
-                    if (parseInt(star.dataset.value) <= rating) {
-                        star.classList.add('lit');
-                    } else {
-                        star.classList.remove('lit');
-                    }
-                });
+            function updateStars () {
+                document.querySelectorAll('.book-card').forEach(function(card) {
+                    const rating = ratings[card.dataset.id] || 0;
+                    card.querySelectorAll('.stars span').forEach(function(star) {
+                        star.classList.toggle('lit', parseInt(star.dataset.value) <= rating);
+                    });
+                })
             }
-            
+
             updateStars();
         </script>
     </body>
