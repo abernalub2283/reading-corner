@@ -50,7 +50,7 @@ body {
     overflow: hidden;
 }
 
-.progress-fill {
+#progress-fill {
     height: 100%;
     width: 0;
     background-color: #c9a227;
